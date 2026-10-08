@@ -1,0 +1,42 @@
+# Exact source-only publication allowlist. Review before adding new files.
+*
+!*/
+!/.gitattributes
+!/.github/workflows/tests.yml
+!/.gitignore
+!/CHANGELOG.md
+!/PUBLIC_FILES.txt
+!/README.md
+!/annotation_modes.py
+!/dataset_paths.py
+!/demo_synthetic.py
+!/docs/ATTRIBUTION.md
+!/docs/MODELS.md
+!/docs/RELEASES.md
+!/docs/USAGE.md
+!/fusion_editor.py
+!/fusion_storage.py
+!/image_processing.py
+!/mask_editor_app.py
+!/models/__init__.py
+!/models/aedge.py
+!/models/fusion.py
+!/models/fusion_v2.py
+!/registration_pipeline.py
+!/requirements-models.txt
+!/requirements.txt
+!/sam_client.py
+!/tests/test_models.py
+!/tests/test_workflow.py
+!/tools/audit_public_files.py
+
+# Runtime directories remain private even if they contain source-like files.
+.venv/
+__pycache__/
+demo_workspace/
+ready_to_annotate/
+new integrate mask/
+data/
+weights/
+checkpoints/
+runs/

@@ -1,0 +1,16 @@
+name: Source-only verification
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -r requirements.txt
+      - run: python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
+      - run: python -m unittest discover -s tests -v
+      - run: python tools/audit_public_files.py
