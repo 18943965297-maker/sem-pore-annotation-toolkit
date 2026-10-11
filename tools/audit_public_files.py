@@ -25,7 +25,7 @@ def main():
     }
     total = 0
     for name in sorted(tracked):
-        if Path(name).suffix.lower() not in {".py", ".md", ".txt", ".yml", ".cff"} and name not in {".gitignore", ".gitattributes"}:
+        if Path(name).suffix.lower() not in {".py", ".md", ".txt", ".yml", ".cff", ".bat"} and name not in {".gitignore", ".gitattributes"}:
             issues.append(f"Disallowed extension: {name}")
         data = git("show", f":{name}")  # inspect staged bytes, not just the working tree
         total += len(data)

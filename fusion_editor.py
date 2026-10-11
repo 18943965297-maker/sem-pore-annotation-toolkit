@@ -67,6 +67,10 @@ class FusionEditor(MaskEditorApp):
         children[1].pack_forget()
         bar = ttk.LabelFrame(self.root, text='SEM Pore Annotation Toolkit · 修改结果保存到本项目', padding=7)
         bar.pack(fill=tk.X, before=self.info_label, padx=8, pady=6)
+        workflow = ttk.Frame(bar); workflow.pack(fill=tk.X, pady=(0, 4))
+        ttk.Button(workflow, text='新图对配准与候选对齐…', command=self.open_registration_workflow).pack(side=tk.LEFT)
+        ttk.Button(workflow, text='查看配准报告', command=self.open_registration_report).pack(side=tk.LEFT, padx=5)
+        ttk.Label(workflow, textvariable=self.registration_status, wraplength=1000).pack(side=tk.LEFT, padx=6)
         line = ttk.Frame(bar); line.pack(fill=tk.X, pady=2)
         ttk.Button(line, text='上一组', command=self.prev_item).pack(side=tk.LEFT)
         ttk.Button(line, text='下一组', command=self.next_item).pack(side=tk.LEFT, padx=3)
@@ -107,6 +111,22 @@ class FusionEditor(MaskEditorApp):
 
     def all_panes(self):
         return (self.before_pane, self.after_pane, self.mask_pane, self.overlay_pane)
+
+    def open_registration_workflow(self):
+        if not self.confirm_discard(): return
+        from sem_workbench import RegistrationWindow
+        window = tk.Toplevel(self.root)
+        def ready(workspace):
+            # Editing may have continued while the non-modal registration window
+            # was open. Check again before switching projects or output roots.
+            if not self.confirm_discard(): return
+            self.project_root = Path(workspace).resolve()
+            self.rows = []; self.folder_navigation_target = None
+            self.index_path.set(str(self.project_root/'annotation_index.csv'))
+            self.status_filter.set('ok')
+            self.load_index()
+            window.destroy()
+        RegistrationWindow(window, on_ready=ready)
 
     def load_index(self):
         session = self.project_root/'new integrate mask/last_session.json'
@@ -151,7 +171,7 @@ class FusionEditor(MaskEditorApp):
         self.roi = self.roi_start = None
         self.edit_history.clear(); self.edit_redo.clear()
         missing = [s for s in SIDES if self.source_masks['SAM'][s] is None]
-        self.fusion_note.set('本组缺少 SAM 来源，初始结果为空；请框选后补充 Aedge 或手工标注。' if missing else
+        self.fusion_note.set('部分 SAM 来源缺失，对应侧初始结果为空；请框选后补充 Aedge 或手工标注。' if missing else
                              '以 SAM 初始化；框选区域后可补充 Aedge 细节，也可用任一来源替换局部。')
         if integrated:
             self.fusion_note.set('已读取 new integrate mask 中的已保存结果，可继续修改。')

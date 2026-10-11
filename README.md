@@ -1,11 +1,16 @@
 # SEM Pore Annotation Toolkit
 
-**Research preview v0.1.0 · 多模型辅助孔隙标注工具**
+**Research preview v0.2.0 · 配准与多模型辅助孔隙标注工具**
 
 A desktop tool for reviewing and correcting precomputed pore masks in paired,
 registered SEM images. Compare Aedge and AP-SAM-derived fusion candidates, select
 local additions or replacements, then manually correct and save separate masks.
 The interface is currently in Chinese. See [English usage guide](docs/USAGE.md).
+
+The new `sem_workbench.py` entry point connects original-image registration,
+visual quality review, candidate-mask alignment and the existing fusion editor.
+It reuses the registration core of SEM Registration Studio. See the
+[integrated workflow](docs/INTEGRATED_WORKFLOW.md).
 
 本项目面向多倍率岩石 SEM 图像中单一模型表现不稳定时的辅助标注工作。
 使用 AP-SAM 与 Aedge 生成候选结果后，由人对照、局部融合并修正。
@@ -16,12 +21,16 @@ The interface is currently in Chinese. See [English usage guide](docs/USAGE.md).
 
 ```mermaid
 flowchart LR
-    I[SEM image] --> AP[External AP-SAM]
+    I[Before / After SEM originals] --> R[Metadata and registration]
+    R --> Q[Overlay and checkerboard review]
+    I --> AP[External AP-SAM]
     I --> AE[Aedge]
     AP --> F[Fusion candidate]
     AE --> F
-    AE --> UI[Candidate comparison and local editing]
-    F --> UI
+    Q --> C[Common image grid]
+    AE --> C
+    F --> C
+    C --> UI[Candidate comparison and local editing]
     UI --> H[Human review and correction]
     H --> M[Saved binary masks and metadata]
 ```
@@ -29,6 +38,8 @@ flowchart LR
 ### What is included
 
 - A four-pane Tkinter editor for paired images and candidate masks.
+- An original-image registration/review window and exact nearest-neighbor
+  candidate alignment into the same cropped image grid.
 - ROI addition/replacement, brush addition/erasing, connected-region deletion,
   undo/redo and independent output storage with checksums.
 - Optional Aedge and gated fusion architecture/loss code in `models/`.
@@ -51,6 +62,8 @@ python -m venv .venv
 .venv\Scripts\Activate.ps1
 # Linux/macOS: source .venv/bin/activate
 python -m pip install -r requirements.txt
+python sem_workbench.py
+# Or open the existing geometric candidate demo:
 python demo_synthetic.py --workspace demo_workspace
 python fusion_editor.py --workspace demo_workspace
 ```
@@ -59,6 +72,16 @@ Tkinter is required (normally included with Windows Python; Linux may need
 `python3-tk`). A graphical desktop is needed for the editor. PyTorch and model
 weights are **not** needed for the synthetic demo or editing existing masks.
 The generator refuses to overwrite an existing workspace.
+
+轻微拍摄位移、旋转或尺度变化可先在统一入口执行配准，检查配准前后叠加
+和棋盘格，再进入融合标注。原图坐标下的候选标签会使用同一变换对齐，
+不能仅因尺寸相同就直接叠加。原始图像和候选文件不被改写。
+
+```powershell
+python demo_registration.py --output demo_registration_workspace
+```
+
+该脚本展示已知的合成拍摄偏移及候选迁移，不使用真实实验图或模型权重。
 
 在左侧选择 Before 或 After；选择“框选融合区域”，在图像中拖出选区，
 选择 Aedge 或 SAM 后点击“局部补充”或“局部替换”。可继续使用画笔、

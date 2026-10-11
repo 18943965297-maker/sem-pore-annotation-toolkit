@@ -10,10 +10,12 @@
 !/annotation_modes.py
 !/dataset_paths.py
 !/demo_synthetic.py
+!/demo_registration.py
 !/docs/ATTRIBUTION.md
 !/docs/MODELS.md
 !/docs/RELEASES.md
 !/docs/USAGE.md
+!/docs/INTEGRATED_WORKFLOW.md
 !/fusion_editor.py
 !/fusion_storage.py
 !/image_processing.py
@@ -23,17 +25,22 @@
 !/models/fusion.py
 !/models/fusion_v2.py
 !/registration_pipeline.py
+!/registration_workflow.py
+!/sem_workbench.py
+!/start_workbench.bat
 !/requirements-models.txt
 !/requirements.txt
 !/sam_client.py
 !/tests/test_models.py
 !/tests/test_workflow.py
+!/tests/test_registration_workflow.py
 !/tools/audit_public_files.py
 
 # Runtime directories remain private even if they contain source-like files.
 .venv/
 __pycache__/
 demo_workspace/
+demo_registration_workspace/
 ready_to_annotate/
 new integrate mask/
 data/
